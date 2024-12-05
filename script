@@ -26,11 +26,12 @@
 local GI = game.PlaceId
 
 local fisch = "https://raw.githubusercontent.com/NYX8HUB/premium/refs/heads/main/games/fisch/script.lua"
+local bloxf - "https://raw.githubusercontent.com/NYX8HUB/premium/refs/heads/main/games/blocfruits/script.lua"
 
 if GI == 16732694052 then
     loadstring(game:HttpGet(fisch))()
-elseif GI == 90849290 then
-    print("bbbb")
+elseif GI == 7449423635 or GI == 4442272183 or GI == 2753915549 then
+    loadstring(game:HttpGet(bloxf))()
 elseif GI == 90813298 then
     print("ccc")
 else
