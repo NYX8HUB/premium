@@ -33,7 +33,7 @@ if GI == 16732694052 then
     loadstring(game:HttpGet(fisch))()
 elseif GI == 7449423635 or GI == 4442272183 or GI == 2753915549 then
     loadstring(game:HttpGet(bloxf))()
-elseif GI == 10260193230 or GI ==  then
+elseif GI == 10260193230 then
     loadstring(game:HttpGet(memesea))()
 else
     game.Players.LocalPlayer:Kick("Invalid game , send suggestions on the discord server : dsc.gg/nyx-hub")
