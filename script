@@ -9,8 +9,7 @@ local memesea = "https://raw.githubusercontent.com/NYX8HUB/premium/refs/heads/ma
 if GI == 16732694052 then
     nix(game:HttpGet(fisch))()
 elseif GI == 7449423635 or GI == 4442272183 or GI == 2753915549 then
-    game.Players.LocalPlayer:Kick("wait for bypass ant cheat fix : dsc.gg/nyx-hub")
-    --nix(game:HttpGet(bloxf))()
+    nix(game:HttpGet(bloxf))()
 elseif GI == 10260193230 then
     nix(game:HttpGet(memesea))()
 else
