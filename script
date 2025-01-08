@@ -1,40 +1,18 @@
---[[
-          _____                _____                                                    _____                    _____                    _____                  
-         /\    \              |\    \                 ______                           /\    \                  /\    \                  /\    \                 
-        /::\____\             |:\____\               |::|   |                         /::\____\                /::\____\                /::\    \                
-       /::::|   |             |::|   |               |::|   |                        /:::/    /               /:::/    /               /::::\    \               
-      /:::::|   |             |::|   |               |::|   |                       /:::/    /               /:::/    /               /::::::\    \              
-     /::::::|   |             |::|   |               |::|   |                      /:::/    /               /:::/    /               /:::/\:::\    \             
-    /:::/|::|   |             |::|   |               |::|   |                     /:::/____/               /:::/    /               /:::/__\:::\    \            
-   /:::/ |::|   |             |::|   |               |::|   |                    /::::\    \              /:::/    /               /::::\   \:::\    \           
-  /:::/  |::|   | _____       |::|___|______         |::|   |                   /::::::\    \   _____    /:::/    /      _____    /::::::\   \:::\    \          
- /:::/   |::|   |/\    \      /::::::::\    \  ______|::|___|___ ____          /:::/\:::\    \ /\    \  /:::/____/      /\    \  /:::/\:::\   \:::\ ___\         
-/:: /    |::|   /::\____\    /::::::::::\____\|:::::::::::::::::|    |        /:::/  \:::\    /::\____\|:::|    /      /::\____\/:::/__\:::\   \:::|    |        
-\::/    /|::|  /:::/    /   /:::/~~~~/~~      |:::::::::::::::::|____|        \::/    \:::\  /:::/    /|:::|____\     /:::/    /\:::\   \:::\  /:::|____|        
- \/____/ |::| /:::/    /   /:::/    /          ~~~~~~|::|~~~|~~~               \/____/ \:::\/:::/    /  \:::\    \   /:::/    /  \:::\   \:::\/:::/    /         
-         |::|/:::/    /   /:::/    /                 |::|   |                           \::::::/    /    \:::\    \ /:::/    /    \:::\   \::::::/    /          
-         |::::::/    /   /:::/    /                  |::|   |                            \::::/    /      \:::\    /:::/    /      \:::\   \::::/    /           
-         |:::::/    /    \::/    /                   |::|   |                            /:::/    /        \:::\__/:::/    /        \:::\  /:::/    /            
-         |::::/    /      \/____/                    |::|   |                           /:::/    /          \::::::::/    /          \:::\/:::/    /             
-         /:::/    /                                  |::|   |                          /:::/    /            \::::::/    /            \::::::/    /              
-        /:::/    /                                   |::|   |                         /:::/    /              \::::/    /              \::::/    /               
-        \::/    /                                    |::|___|                         \::/    /                \::/____/                \::/____/                
-         \/____/                                      ~~                               \/____/                  ~~                       ~~                      
-                                                                                                                                                                 
-]]                                                               
 
 local GI = game.PlaceId
+local nix = (loadstring or load)
 
 local fisch = "https://raw.githubusercontent.com/NYX8HUB/premium/refs/heads/main/games/fisch/script.lua"
 local bloxf = "https://raw.githubusercontent.com/NYX8HUB/premium/refs/heads/main/games/blocfruits/script.lua"
 local memesea = "https://raw.githubusercontent.com/NYX8HUB/premium/refs/heads/main/games/memesea/script.lua"
 
 if GI == 16732694052 then
-    loadstring(game:HttpGet(fisch))()
+    nix(game:HttpGet(fisch))()
 elseif GI == 7449423635 or GI == 4442272183 or GI == 2753915549 then
-    loadstring(game:HttpGet(bloxf))()
+    game.Players.LocalPlayer:Kick("wait for bypass ant cheat fix : dsc.gg/nyx-hub")
+    --nix(game:HttpGet(bloxf))()
 elseif GI == 10260193230 then
-    loadstring(game:HttpGet(memesea))()
+    nix(game:HttpGet(memesea))()
 else
     game.Players.LocalPlayer:Kick("Invalid game , send suggestions on the discord server : dsc.gg/nyx-hub")
 end
