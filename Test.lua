@@ -7,8 +7,8 @@ Tab.__index = Tab
 
 -- Configurações padrão
 local defaultProperties = {
-    LabelColor = Color3.fromRGB(0, 150, 255),
     PrimaryColor = Color3.fromRGB(0, 120, 215),
+    LabelColor = Color3.fromRGB(0, 150, 255), -- Cor das labels
     BackgroundColor = Color3.fromRGB(20, 20, 20),
     TextColor = Color3.fromRGB(255, 255, 255),
     SubtextColor = Color3.fromRGB(150, 150, 150),
@@ -23,39 +23,6 @@ local defaultProperties = {
     HeaderPadding = 10
 }
 
-
-function Tab:AddLabel(config)
-    local labelFrame = Instance.new("Frame")
-    labelFrame.Size = UDim2.new(0.95, 0, 0, 30)
-    labelFrame.BackgroundTransparency = 1
-    labelFrame.Parent = self.content
-
-    local label = Instance.new("TextLabel")
-    label.Name = config.id or "Label"
-    label.Text = config.text or "Label"
-    label.Size = UDim2.new(1, 0, 1, 0)
-    label.TextColor3 = defaultProperties.LabelColor
-    label.Font = Enum.Font.GothamBold
-    label.TextSize = 18
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.BackgroundTransparency = 1
-    label.Parent = labelFrame
-
-    -- Armazena a label para edição futura
-    self.labels = self.labels or {}
-    self.labels[config.id] = label
-
-    return self
-end
-
-function Tab:Edit(id, newText)
-    if self.labels and self.labels[id] then
-        self.labels[id].Text = newText
-    else
-        warn("Label com ID '"..id.."' não encontrada!")
-    end
-    return self
-end
 -- Função para criar cantos arredondados
 local function applyUICorner(instance)
     local corner = Instance.new("UICorner")
@@ -214,7 +181,8 @@ function Library:newtab(config)
     local newTab = setmetatable({
         id = config.id,
         content = tabContent,
-        button = tabButton
+        button = tabButton,
+        labels = {} -- Armazena as labels para edição
     }, Tab)
 
     -- Evento de clique na aba
@@ -238,6 +206,40 @@ function Library:newtab(config)
 
     table.insert(self._tabs, newTab)
     return newTab
+end
+
+-- Método AddLabel
+function Tab:AddLabel(config)
+    local labelFrame = Instance.new("Frame")
+    labelFrame.Size = UDim2.new(0.95, 0, 0, 30)
+    labelFrame.BackgroundTransparency = 1
+    labelFrame.Parent = self.content
+
+    local label = Instance.new("TextLabel")
+    label.Name = config.id or "Label"
+    label.Text = config.text or "Label"
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.TextColor3 = defaultProperties.LabelColor
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 18
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.BackgroundTransparency = 1
+    label.Parent = labelFrame
+
+    -- Armazena a label para edição futura
+    self.labels[config.id] = label
+
+    return self
+end
+
+-- Método Edit
+function Tab:Edit(id, newText)
+    if self.labels[id] then
+        self.labels[id].Text = newText
+    else
+        warn("Label com ID '"..id.."' não encontrada!")
+    end
+    return self
 end
 
 -- Método AddToggle
