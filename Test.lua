@@ -8,7 +8,7 @@ Tab.__index = Tab
 -- Configurações padrão
 local defaultProperties = {
     PrimaryColor = Color3.fromRGB(0, 120, 215),
-    LabelColor = Color3.fromRGB(0, 150, 255), -- Cor das labels
+    LabelColor = Color3.fromRGB(0, 150, 255),
     BackgroundColor = Color3.fromRGB(20, 20, 20),
     TextColor = Color3.fromRGB(255, 255, 255),
     SubtextColor = Color3.fromRGB(150, 150, 150),
@@ -170,11 +170,13 @@ function Library:newtab(config)
     tabContent.Size = UDim2.new(1, 0, 1, 0)
     tabContent.BackgroundTransparency = 1
     tabContent.ScrollBarThickness = 5
-    tabContent.Visible = false
     tabContent.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    tabContent.Visible = false
     tabContent.Parent = self._contentContainer
 
+    -- Layout para ordenação correta
     local contentLayout = Instance.new("UIListLayout")
+    contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
     contentLayout.Padding = UDim.new(0, 5)
     contentLayout.Parent = tabContent
 
@@ -182,7 +184,8 @@ function Library:newtab(config)
         id = config.id,
         content = tabContent,
         button = tabButton,
-        labels = {} -- Armazena as labels para edição
+        labels = {},
+        elements = {} -- Armazena a ordem dos elementos
     }, Tab)
 
     -- Evento de clique na aba
@@ -213,10 +216,10 @@ function Tab:AddLabel(config)
     local labelFrame = Instance.new("Frame")
     labelFrame.Size = UDim2.new(0.95, 0, 0, 30)
     labelFrame.BackgroundTransparency = 1
+    labelFrame.LayoutOrder = #self.elements + 1 -- Ordem de layout
     labelFrame.Parent = self.content
 
     local label = Instance.new("TextLabel")
-    label.Name = config.id or "Label"
     label.Text = config.text or "Label"
     label.Size = UDim2.new(1, 0, 1, 0)
     label.TextColor3 = defaultProperties.LabelColor
@@ -226,19 +229,10 @@ function Tab:AddLabel(config)
     label.BackgroundTransparency = 1
     label.Parent = labelFrame
 
-    -- Armazena a label para edição futura
+    -- Armazenamento para edição
     self.labels[config.id] = label
+    table.insert(self.elements, {type = "label", id = config.id})
 
-    return self
-end
-
--- Método Edit
-function Tab:Edit(id, newText)
-    if self.labels[id] then
-        self.labels[id].Text = newText
-    else
-        warn("Label com ID '"..id.."' não encontrada!")
-    end
     return self
 end
 
@@ -247,6 +241,7 @@ function Tab:AddToggle(config)
     local toggleFrame = Instance.new("Frame")
     toggleFrame.Size = UDim2.new(0.95, 0, 0, 45)
     toggleFrame.BackgroundTransparency = 1
+    toggleFrame.LayoutOrder = #self.elements + 1 -- Ordem de layout
     toggleFrame.Parent = self.content
 
     -- Container do toggle
@@ -316,6 +311,7 @@ function Tab:AddToggle(config)
 
     toggleButton.MouseButton1Click:Connect(updateToggle)
 
+    table.insert(self.elements, {type = "toggle", id = config.id})
     return self
 end
 
@@ -324,6 +320,7 @@ function Tab:AddButton(config)
     local buttonFrame = Instance.new("Frame")
     buttonFrame.Size = UDim2.new(0.95, 0, 0, 45)
     buttonFrame.BackgroundTransparency = 1
+    buttonFrame.LayoutOrder = #self.elements + 1 -- Ordem de layout
     buttonFrame.Parent = self.content
 
     -- Botão
@@ -345,6 +342,17 @@ function Tab:AddButton(config)
         end
     end)
 
+    table.insert(self.elements, {type = "button", id = config.id})
+    return self
+end
+
+-- Método Edit
+function Tab:Edit(id, newText)
+    if self.labels[id] then
+        self.labels[id].Text = newText
+    else
+        warn("Label não encontrada:", id)
+    end
     return self
 end
 
