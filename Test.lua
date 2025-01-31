@@ -311,6 +311,7 @@ function Library:newtab(config)
     return newTab
 end
 
+-- Retorna a função de inicialização
 return function()
     return Library.new()
 end
