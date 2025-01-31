@@ -7,14 +7,16 @@ Tab.__index = Tab
 
 -- Configurações padrão
 local defaultProperties = {
-    PrimaryColor = Color3.fromRGB(0, 120, 215), -- Azul
+    PrimaryColor = Color3.fromRGB(0, 120, 215),
     BackgroundColor = Color3.fromRGB(20, 20, 20),
     TextColor = Color3.fromRGB(255, 255, 255),
     SubtextColor = Color3.fromRGB(200, 200, 200),
     SubtextSize = 14,
-    SliderColor = Color3.fromRGB(60, 60, 60),
-    Transparency = 0.95,
-    CornerRadius = UDim.new(0, 6)
+    Transparency = 0.2,
+    CornerRadius = UDim.new(0, 6),
+    DragAreaHeight = 30,
+    TabHeight = 35,
+    TabSpacing = 5
 }
 
 -- Função para criar cantos arredondados
@@ -22,6 +24,44 @@ local function applyUICorner(instance)
     local corner = Instance.new("UICorner")
     corner.CornerRadius = defaultProperties.CornerRadius
     corner.Parent = instance
+end
+
+-- Sistema de arrasto
+local function makeDraggable(frame, dragArea)
+    local dragging = false
+    local dragInput, dragStart, startPos
+
+    dragArea.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    dragArea.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(
+                startPos.X.Scale, 
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale, 
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
 end
 
 -- Métodos da aba
@@ -126,16 +166,24 @@ function Library:create(config)
     applyUICorner(mainFrame)
     mainFrame.Parent = screenGui
 
+    -- Área de arrasto
+    local dragArea = Instance.new("Frame")
+    dragArea.Size = UDim2.new(1, 0, 0, defaultProperties.DragAreaHeight)
+    dragArea.BackgroundTransparency = 1
+    dragArea.Parent = mainFrame
+    makeDraggable(mainFrame, dragArea)
+
     -- Container de abas (lateral esquerda)
     local tabContainer = Instance.new("Frame")
-    tabContainer.Size = UDim2.new(0.25, 0, 1, 0)
+    tabContainer.Size = UDim2.new(0.25, 0, 1, -defaultProperties.DragAreaHeight)
+    tabContainer.Position = UDim2.new(0, 0, 0, defaultProperties.DragAreaHeight)
     tabContainer.BackgroundTransparency = 1
     tabContainer.Parent = mainFrame
 
     -- Container de conteúdo (lateral direita)
     local contentContainer = Instance.new("Frame")
-    contentContainer.Size = UDim2.new(0.75, 0, 1, 0)
-    contentContainer.Position = UDim2.new(0.25, 0, 0, 0)
+    contentContainer.Size = UDim2.new(0.75, 0, 1, -defaultProperties.DragAreaHeight)
+    contentContainer.Position = UDim2.new(0.25, 0, 0, defaultProperties.DragAreaHeight)
     contentContainer.BackgroundTransparency = 1
     contentContainer.Parent = mainFrame
 
@@ -148,8 +196,8 @@ end
 
 function Library:newtab(config)
     local tabButton = Instance.new("TextButton")
-    tabButton.Size = UDim2.new(0.9, 0, 0, 35)
-    tabButton.Position = UDim2.new(0.05, 0, 0, #self._tabs * 40)
+    tabButton.Size = UDim2.new(0.9, 0, 0, defaultProperties.TabHeight)
+    tabButton.Position = UDim2.new(0.05, 0, 0, #self._tabs * (defaultProperties.TabHeight + defaultProperties.TabSpacing))
     tabButton.Text = config.name
     tabButton.BackgroundColor3 = Color3.new(1, 1, 1)
     tabButton.BackgroundTransparency = 0.9
