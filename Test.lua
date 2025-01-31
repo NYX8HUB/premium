@@ -10,7 +10,7 @@ local defaultProperties = {
     PrimaryColor = Color3.fromRGB(0, 120, 215),
     BackgroundColor = Color3.fromRGB(20, 20, 20),
     TextColor = Color3.fromRGB(255, 255, 255),
-    SubtextColor = Color3.fromRGB(150, 150, 150), -- Cor do subtítulo
+    SubtextColor = Color3.fromRGB(150, 150, 150),
     Transparency = 0.2,
     CornerRadius = UDim.new(0, 6),
     TabHeight = 35,
@@ -18,7 +18,8 @@ local defaultProperties = {
     TitleFont = Enum.Font.GothamBold,
     TitleSize = 18,
     SubtitleFont = Enum.Font.Gotham,
-    SubtitleSize = 14
+    SubtitleSize = 14,
+    HeaderPadding = 10
 }
 
 -- Função para criar cantos arredondados
@@ -87,48 +88,60 @@ function Library:create(config)
     applyUICorner(mainFrame)
     mainFrame.Parent = screenGui
 
-    -- Área de arrasto (título e subtítulo)
+    -- Área de arrasto (cabeçalho)
     local dragArea = Instance.new("Frame")
-    dragArea.Size = UDim2.new(1, 0, 0, 60)
+    dragArea.Size = UDim2.new(1, 0, 0, 40)
     dragArea.BackgroundTransparency = 1
     dragArea.Parent = mainFrame
     makeDraggable(mainFrame, dragArea)
 
-    -- Título da UI
+    -- Container do cabeçalho (título + subtítulo)
+    local headerFrame = Instance.new("Frame")
+    headerFrame.Size = UDim2.new(1, -10, 1, 0)
+    headerFrame.Position = UDim2.new(0, 5, 0, 0)
+    headerFrame.BackgroundTransparency = 1
+    headerFrame.Parent = dragArea
+
+    -- Layout horizontal para título e subtítulo
+    local headerLayout = Instance.new("UIListLayout")
+    headerLayout.FillDirection = Enum.FillDirection.Horizontal
+    headerLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    headerLayout.Padding = UDim.new(0, defaultProperties.HeaderPadding)
+    headerLayout.Parent = headerFrame
+
+    -- Título
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Text = config.title or "Minha UI"
-    titleLabel.Size = UDim2.new(1, -10, 0.6, 0)
-    titleLabel.Position = UDim2.new(0, 5, 0, 0)
+    titleLabel.Text = config.title or "Título"
+    titleLabel.Size = UDim2.new(0, 0, 1, 0) -- Tamanho automático
+    titleLabel.AutomaticSize = Enum.AutomaticSize.X
     titleLabel.TextColor3 = defaultProperties.TextColor
-    titleLabel.BackgroundTransparency = 1
     titleLabel.Font = defaultProperties.TitleFont
     titleLabel.TextSize = defaultProperties.TitleSize
-    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Parent = dragArea
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Parent = headerFrame
 
-    -- Subtítulo da UI
+    -- Subtítulo
     local subtitleLabel = Instance.new("TextLabel")
     subtitleLabel.Text = config.subtitle or "Subtítulo"
-    subtitleLabel.Size = UDim2.new(1, -10, 0.4, 0)
-    subtitleLabel.Position = UDim2.new(0, 5, 0.6, 0)
+    subtitleLabel.Size = UDim2.new(1, -titleLabel.AbsoluteSize.X, 1, 0)
     subtitleLabel.TextColor3 = defaultProperties.SubtextColor
-    subtitleLabel.BackgroundTransparency = 1
     subtitleLabel.Font = defaultProperties.SubtitleFont
     subtitleLabel.TextSize = defaultProperties.SubtitleSize
+    subtitleLabel.BackgroundTransparency = 1
     subtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    subtitleLabel.Parent = dragArea
+    subtitleLabel.Parent = headerFrame
 
     -- Container de abas (lateral esquerda)
     local tabContainer = Instance.new("Frame")
-    tabContainer.Size = UDim2.new(0.25, 0, 1, -60)
-    tabContainer.Position = UDim2.new(0, 0, 0, 60)
+    tabContainer.Size = UDim2.new(0.25, 0, 1, -40)
+    tabContainer.Position = UDim2.new(0, 0, 0, 40)
     tabContainer.BackgroundTransparency = 1
     tabContainer.Parent = mainFrame
 
     -- Container de conteúdo (lateral direita)
     local contentContainer = Instance.new("Frame")
-    contentContainer.Size = UDim2.new(0.75, 0, 1, -60)
-    contentContainer.Position = UDim2.new(0.25, 0, 0, 60)
+    contentContainer.Size = UDim2.new(0.75, 0, 1, -40)
+    contentContainer.Position = UDim2.new(0.25, 0, 0, 40)
     contentContainer.BackgroundTransparency = 1
     contentContainer.Parent = mainFrame
 
@@ -193,7 +206,7 @@ function Library:newtab(config)
     return newTab
 end
 
--- Método AddToggle corrigido
+-- Método AddToggle
 function Tab:AddToggle(config)
     local toggleFrame = Instance.new("Frame")
     toggleFrame.Size = UDim2.new(0.95, 0, 0, 45)
@@ -266,6 +279,35 @@ function Tab:AddToggle(config)
     end
 
     toggleButton.MouseButton1Click:Connect(updateToggle)
+
+    return self
+end
+
+-- Método AddButton
+function Tab:AddButton(config)
+    local buttonFrame = Instance.new("Frame")
+    buttonFrame.Size = UDim2.new(0.95, 0, 0, 45)
+    buttonFrame.BackgroundTransparency = 1
+    buttonFrame.Parent = self.content
+
+    -- Botão
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, 0, 1, 0)
+    button.Text = config.title or "Button"
+    button.BackgroundColor3 = defaultProperties.PrimaryColor
+    button.BackgroundTransparency = 0.8
+    button.TextColor3 = defaultProperties.TextColor
+    button.Font = Enum.Font.GothamSemibold
+    button.TextSize = 16
+    applyUICorner(button)
+    button.Parent = buttonFrame
+
+    -- Evento de clique
+    button.MouseButton1Click:Connect(function()
+        if config.callback then
+            config.callback()
+        end
+    end)
 
     return self
 end
