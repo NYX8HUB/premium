@@ -10,13 +10,15 @@ local defaultProperties = {
     PrimaryColor = Color3.fromRGB(0, 120, 215),
     BackgroundColor = Color3.fromRGB(20, 20, 20),
     TextColor = Color3.fromRGB(255, 255, 255),
-    SubtextColor = Color3.fromRGB(200, 200, 200),
+    SubtextColor = Color3.fromRGB(150, 150, 150), -- Cor do subtítulo
     Transparency = 0.2,
     CornerRadius = UDim.new(0, 6),
     TabHeight = 35,
     TabSpacing = 5,
     TitleFont = Enum.Font.GothamBold,
-    TitleSize = 18
+    TitleSize = 18,
+    SubtitleFont = Enum.Font.Gotham,
+    SubtitleSize = 14
 }
 
 -- Função para criar cantos arredondados
@@ -24,6 +26,44 @@ local function applyUICorner(instance)
     local corner = Instance.new("UICorner")
     corner.CornerRadius = defaultProperties.CornerRadius
     corner.Parent = instance
+end
+
+-- Sistema de arrasto
+local function makeDraggable(frame, dragArea)
+    local dragging = false
+    local dragInput, dragStart, startPos
+
+    dragArea.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    dragArea.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(
+                startPos.X.Scale, 
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale, 
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
 end
 
 -- Sistema de abas
@@ -47,34 +87,48 @@ function Library:create(config)
     applyUICorner(mainFrame)
     mainFrame.Parent = screenGui
 
-    -- Título da UI
-    local titleFrame = Instance.new("Frame")
-    titleFrame.Size = UDim2.new(1, 0, 0, 40)
-    titleFrame.BackgroundTransparency = 1
-    titleFrame.Parent = mainFrame
+    -- Área de arrasto (título e subtítulo)
+    local dragArea = Instance.new("Frame")
+    dragArea.Size = UDim2.new(1, 0, 0, 60)
+    dragArea.BackgroundTransparency = 1
+    dragArea.Parent = mainFrame
+    makeDraggable(mainFrame, dragArea)
 
+    -- Título da UI
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Text = config.title or "Minha UI"
-    titleLabel.Size = UDim2.new(1, -10, 1, 0)
+    titleLabel.Size = UDim2.new(1, -10, 0.6, 0)
     titleLabel.Position = UDim2.new(0, 5, 0, 0)
     titleLabel.TextColor3 = defaultProperties.TextColor
     titleLabel.BackgroundTransparency = 1
     titleLabel.Font = defaultProperties.TitleFont
     titleLabel.TextSize = defaultProperties.TitleSize
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Parent = titleFrame
+    titleLabel.Parent = dragArea
+
+    -- Subtítulo da UI
+    local subtitleLabel = Instance.new("TextLabel")
+    subtitleLabel.Text = config.subtitle or "Subtítulo"
+    subtitleLabel.Size = UDim2.new(1, -10, 0.4, 0)
+    subtitleLabel.Position = UDim2.new(0, 5, 0.6, 0)
+    subtitleLabel.TextColor3 = defaultProperties.SubtextColor
+    subtitleLabel.BackgroundTransparency = 1
+    subtitleLabel.Font = defaultProperties.SubtitleFont
+    subtitleLabel.TextSize = defaultProperties.SubtitleSize
+    subtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    subtitleLabel.Parent = dragArea
 
     -- Container de abas (lateral esquerda)
     local tabContainer = Instance.new("Frame")
-    tabContainer.Size = UDim2.new(0.25, 0, 1, -40)
-    tabContainer.Position = UDim2.new(0, 0, 0, 40)
+    tabContainer.Size = UDim2.new(0.25, 0, 1, -60)
+    tabContainer.Position = UDim2.new(0, 0, 0, 60)
     tabContainer.BackgroundTransparency = 1
     tabContainer.Parent = mainFrame
 
     -- Container de conteúdo (lateral direita)
     local contentContainer = Instance.new("Frame")
-    contentContainer.Size = UDim2.new(0.75, 0, 1, -40)
-    contentContainer.Position = UDim2.new(0.25, 0, 0, 40)
+    contentContainer.Size = UDim2.new(0.75, 0, 1, -60)
+    contentContainer.Position = UDim2.new(0.25, 0, 0, 60)
     contentContainer.BackgroundTransparency = 1
     contentContainer.Parent = mainFrame
 
